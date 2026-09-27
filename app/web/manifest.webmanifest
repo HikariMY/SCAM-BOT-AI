@@ -1,0 +1,16 @@
+{
+  "name": "Scam Alert - ตรวจข้อความมิจฉาชีพ",
+  "short_name": "ตรวจมิจฉาชีพ",
+  "description": "ส่งข้อความหรือรูปแคปหน้าจอที่สงสัย ระบบบอกทันทีว่าอันตรายไหม",
+  "lang": "th",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1E3A8A",
+  "icons": [
+    { "src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

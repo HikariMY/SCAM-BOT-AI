@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scam Alert Bot - Dashboard</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">SCAM <span>ALERT</span> BOT</div>
+    <nav>
+      <a href="/try">ตรวจข้อความ</a>
+      <a href="/dashboard" class="active">Dashboard</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="row spread">
+      <div>
+        <h1>Dashboard สถิติกลโกง</h1>
+        <p class="subtitle" id="window-label"></p>
+      </div>
+      <div class="row" id="periods">
+        <button data-period="day" class="selected">รายวัน</button>
+        <button data-period="week">รายสัปดาห์</button>
+        <button data-period="month">รายเดือน</button>
+      </div>
+    </div>
+
+    <section class="grid kpis">
+      <div class="card kpi"><div class="value" id="k-total">-</div><div class="label">ข้อความที่ตรวจ</div></div>
+      <div class="card kpi"><div class="value" id="k-scams">-</div><div class="label">พบกลโกง</div></div>
+      <div class="card kpi"><div class="value" id="k-high">-</div><div class="label">ความเสี่ยงสูง</div></div>
+      <div class="card kpi"><div class="value" id="k-rate">-</div><div class="label">สัดส่วนกลโกง</div></div>
+    </section>
+
+    <section class="grid charts">
+      <div class="card"><h3>ประเภทกลโกง</h3><div class="chart-box"><canvas id="c-category"></canvas></div></div>
+      <div class="card"><h3>หน่วยงานที่ถูกแอบอ้าง</h3><div class="chart-box"><canvas id="c-org"></canvas></div></div>
+      <div class="card wide"><h3>แนวโน้ม</h3><div class="chart-box"><canvas id="c-trend"></canvas></div></div>
+    </section>
+
+    <section class="grid charts">
+      <div class="card">
+        <h3>แจ้งเตือนลิงก์ระบาด (24 ชม.)</h3>
+        <ul class="plain" id="emerging"></ul>
+      </div>
+      <div class="card">
+        <h3>รายงานล่าสุด</h3>
+        <table>
+          <thead><tr><th>Report ID</th><th>ประเภท</th><th>เสี่ยง</th><th>แอบอ้าง</th></tr></thead>
+          <tbody id="recent"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

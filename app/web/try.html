@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ตรวจข้อความมิจฉาชีพ - Scam Alert</title>
+  <meta name="description" content="ส่งข้อความหรือรูปแคปหน้าจอที่สงสัย ระบบบอกทันทีว่าอันตรายไหม">
+  <meta name="theme-color" content="#1E3A8A">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/static/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ตรวจมิจฉาชีพ">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/try.css">
+</head>
+<body>
+  <header>
+    <h1>🛡️ ตรวจข้อความมิจฉาชีพ</h1>
+    <button class="font-toggle" id="font-toggle" aria-pressed="false" aria-label="ขยายตัวหนังสือ">ก+</button>
+  </header>
+
+  <main>
+    <section class="card" id="input-card">
+      <p class="lead">ได้ข้อความแปลกๆ ส่งมาให้ตรวจก่อนได้เลย ✅</p>
+
+      <label class="big-button primary" for="image-input">📷 ส่งรูปแคปหน้าจอ</label>
+      <input type="file" id="image-input" class="visually-hidden" accept="image/*">
+
+      <button class="big-button" id="paste-button" type="button">📋 วางข้อความที่คัดลอกไว้</button>
+
+      <p class="or">หรือพิมพ์ข้อความลงในช่องนี้</p>
+      <label class="hint visually-hidden" for="message">ข้อความที่สงสัย</label>
+      <textarea id="message" maxlength="2000" placeholder="วางหรือพิมพ์ข้อความตรงนี้"></textarea>
+      <button class="big-button primary" id="check-button" type="button" style="margin-top:12px">🔍 ตรวจเลย</button>
+    </section>
+
+    <section class="card status" id="loading" hidden aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <span id="loading-text">กำลังตรวจ รอสักครู่...</span>
+    </section>
+
+    <p class="card status error" id="error" role="alert" hidden></p>
+
+    <section class="card result" id="result" hidden aria-live="polite">
+      <div class="result-head" id="result-head">
+        <h2 id="headline"></h2>
+        <p id="risk"></p>
+      </div>
+      <div class="result-body">
+        <p class="explanation" id="explanation"></p>
+        <ul class="donts" id="donts"></ul>
+        <p class="tip" id="tip"></p>
+        <div id="read-text-block" hidden>
+          <p class="hint" style="margin:0 0 4px">ข้อความที่อ่านได้จากรูป:</p>
+          <p class="read-text" id="read-text"></p>
+        </div>
+        <a class="big-button call" href="tel:1441">📞 โทร 1441 ปรึกษาฟรี</a>
+        <button class="big-button" id="again-button" type="button">🔄 ตรวจข้อความอื่น</button>
+        <details>
+          <summary>ดูรายละเอียด (สำหรับลูกหลาน)</summary>
+          <dl id="details"></dl>
+        </details>
+      </div>
+    </section>
+
+    <section class="card install" id="install-card" hidden>
+      <p><strong>➕ เพิ่มไว้ที่หน้าจอมือถือ</strong><br>ครั้งหน้ากดไอคอนเดียวก็ใช้ได้เลย</p>
+      <button class="big-button primary" id="install-button" type="button" hidden>เพิ่มไว้ที่หน้าจอ</button>
+      <p id="ios-hint" hidden>กดปุ่ม <strong>แชร์ ⬆️</strong> ด้านล่างของ Safari แล้วเลือก <strong>"เพิ่มไปยังหน้าจอโฮม"</strong></p>
+    </section>
+  </main>
+
+  <footer>
+    ผลตรวจเป็นการประเมินอัตโนมัติ ใช้ประกอบการตัดสินใจ · <a href="/dashboard">สถิติกลโกง</a>
+  </footer>
+
+  <script src="/static/try.js"></script>
+</body>
+</html>

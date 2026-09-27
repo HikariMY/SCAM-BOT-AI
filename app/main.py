@@ -67,7 +67,7 @@ def build_analyzer(settings: Settings) -> ScamAnalyzer:
     if not settings.gemini_api_key:
         logger.warning("GEMINI_API_KEY not set; running with the rule engine only")
         return ScamAnalyzer()
-    return ScamAnalyzer(GeminiProvider(settings.gemini_api_key, settings.gemini_model))
+    return ScamAnalyzer(GeminiProvider(settings.gemini_api_key, settings.gemini_models))
 
 
 def seed_if_empty(repository: ReportRepository) -> None:

@@ -14,7 +14,7 @@ SLIDE_TEXT = "พัสดุของท่านจัดส่งไม่ไ
 
 
 def make_settings(tmp_path) -> Settings:
-    return Settings(gemini_api_key=None, gemini_model="test", line_channel_secret=None,
+    return Settings(gemini_api_key=None, gemini_models=("test",), line_channel_secret=None,
                     line_channel_access_token=None, database_path=str(tmp_path / "api.db"))
 
 

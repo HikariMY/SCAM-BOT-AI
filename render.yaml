@@ -12,8 +12,9 @@ services:
     envVars:
       - key: GEMINI_API_KEY
         sync: false
+      # Comma-separated fallback list: the next model is tried when one is overloaded.
       - key: GEMINI_MODEL
-        value: gemini-flash-latest
+        value: gemini-2.5-flash,gemini-flash-latest,gemini-flash-lite-latest
       - key: LINE_CHANNEL_SECRET
         sync: false
       - key: LINE_CHANNEL_ACCESS_TOKEN

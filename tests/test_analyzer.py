@@ -173,10 +173,39 @@ class _FakeResponse:
         self.parsed, self.text = parsed, text
 
 
-def gemini_with(models) -> GeminiProvider:
-    provider = GeminiProvider(api_key="test-key", model="test-model")
+def gemini_with(models, model_names=("test-model",)) -> GeminiProvider:
+    provider = GeminiProvider(api_key="test-key", models=model_names)
     provider._client = type("Client", (), {"models": models})()
     return provider
+
+
+class _FlakyModels:
+    """First model is overloaded, second works."""
+
+    def __init__(self, response):
+        self.tried: list[str] = []
+        self._response = response
+
+    def generate_content(self, model, **kwargs):
+        self.tried.append(model)
+        if model == "busy-model":
+            raise RuntimeError("503 UNAVAILABLE")
+        return self._response
+
+
+def test_gemini_falls_back_to_next_model_when_overloaded():
+    parsed = LLMVerdictSchema(category="PHISHING", risk=95, red_flags=[], summary="หลอก")
+    models = _FlakyModels(_FakeResponse(parsed=parsed))
+
+    verdict = gemini_with(models, ("busy-model", "ok-model")).classify("x", Entities(), ())
+
+    assert verdict.risk == 95
+    assert models.tried == ["busy-model", "ok-model"]
+
+
+def test_gemini_requires_a_model():
+    with pytest.raises(ValueError):
+        GeminiProvider(api_key="k", models=())
 
 
 def test_gemini_uses_parsed_schema():

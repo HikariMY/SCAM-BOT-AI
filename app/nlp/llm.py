@@ -14,7 +14,7 @@ from app.models import DomainFinding, Entities, ScamCategory, Verdict
 
 logger = logging.getLogger(__name__)
 
-REQUEST_TIMEOUT_MS = 15_000
+REQUEST_TIMEOUT_MS = 12_000
 MAX_RED_FLAGS = 5
 
 SYSTEM_PROMPT = """คุณคือระบบตรวจจับข้อความหลอกลวง (scam) ภาษาไทย
@@ -94,43 +94,49 @@ def to_verdict(schema: LLMVerdictSchema) -> Verdict:
 class GeminiProvider:
     name = "gemini"
 
-    def __init__(self, api_key: str, model: str) -> None:
+    def __init__(self, api_key: str, models: tuple[str, ...]) -> None:
         from google import genai
         from google.genai import types
 
+        if not models:
+            raise ValueError("at least one Gemini model is required")
         self._types = types
-        self._model = model
+        self._models = models
         self._client = genai.Client(
             api_key=api_key, http_options=types.HttpOptions(timeout=REQUEST_TIMEOUT_MS)
         )
 
+    def _generate(self, contents, **config_fields):
+        """Try each model in order; free-tier models are often briefly overloaded (503/429)."""
+        config = self._types.GenerateContentConfig(
+            automatic_function_calling=self._types.AutomaticFunctionCallingConfig(disable=True),
+            **config_fields,
+        )
+        last_error: Exception | None = None
+        for model in self._models:
+            try:
+                return self._client.models.generate_content(model=model, contents=contents, config=config)
+            except Exception as exc:  # SDK raises several error types (network, quota, auth)
+                logger.warning("Gemini model %s failed: %s", model, type(exc).__name__)
+                last_error = exc
+        raise LLMError(f"All Gemini models failed: {type(last_error).__name__}") from last_error
+
     def classify(self, text: str, entities: Entities,
                  findings: tuple[DomainFinding, ...]) -> Verdict:
-        config = self._types.GenerateContentConfig(
+        response = self._generate(
+            build_user_prompt(text, entities, findings),
             system_instruction=SYSTEM_PROMPT,
             response_mime_type="application/json",
             response_schema=LLMVerdictSchema,
             temperature=0.1,
         )
-        try:
-            response = self._client.models.generate_content(
-                model=self._model,
-                contents=build_user_prompt(text, entities, findings),
-                config=config,
-            )
-        except Exception as exc:  # SDK raises several error types (network, quota, auth)
-            raise LLMError(f"Gemini request failed: {type(exc).__name__}") from exc
         return self._parse(response)
 
     def extract_text(self, image: bytes, mime_type: str) -> str:
-        try:
-            response = self._client.models.generate_content(
-                model=self._model,
-                contents=[self._types.Part.from_bytes(data=image, mime_type=mime_type), OCR_PROMPT],
-                config=self._types.GenerateContentConfig(temperature=0),
-            )
-        except Exception as exc:  # SDK raises several error types (network, quota, auth)
-            raise LLMError(f"Gemini OCR failed: {type(exc).__name__}") from exc
+        response = self._generate(
+            [self._types.Part.from_bytes(data=image, mime_type=mime_type), OCR_PROMPT],
+            temperature=0,
+        )
         text = (response.text or "").strip()
         if not text or text == NO_TEXT_MARKER:
             raise NoTextFoundError("no text in image")

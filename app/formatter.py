@@ -29,6 +29,16 @@ ASK_FOR_IMAGE_TEXT = (
     "📷 แคปหน้าจอข้อความที่สงสัย\n"
     "แล้วกดปุ่ม \"📷 ส่งรูปให้ตรวจ\" ด้านล่าง เลือกรูปที่แคปไว้ได้เลย"
 )
+PRIVACY_TEXT = (
+    "🔒 ความเป็นส่วนตัว\n\n"
+    "• ไม่เก็บข้อความหรือรูปที่คุณส่งมา เก็บเพียงรหัสแทนข้อความ (hash) "
+    "และลิงก์ เบอร์โทร เลขบัญชีที่พบ เพื่อทำสถิติกลโกง\n"
+    "• ไม่เก็บชื่อหรือ LINE ID ของคุณ\n"
+    "• ข้อความจะถูกส่งให้ AI (Google Gemini) ช่วยวิเคราะห์ "
+    "จึงไม่ควรส่งรหัสผ่าน OTP หรือเลขบัตรของตัวเองมา\n"
+    "• บอทนี้จะไม่ขอเงิน รหัส หรือข้อมูลส่วนตัวจากคุณเด็ดขาด "
+    "ถ้ามีใครอ้างว่าเป็นบอทนี้แล้วขอสิ่งเหล่านี้ คือมิจฉาชีพ"
+)
 DETAILS_NOT_FOUND_TEXT = "ไม่พบรายละเอียดของรายงานนี้แล้ว ลองส่งข้อความมาตรวจใหม่อีกครั้ง"
 
 HOTLINE_TEXT = (
@@ -55,26 +65,39 @@ def defang(url: str) -> str:
 
 
 def format_details(record: dict) -> str:
-    """Technical details of a stored report, shown when the user taps "ดูรายละเอียด"."""
+    """Stored report laid out as the three NLP steps from the project slides.
+
+    Shown when the user taps "ดูรายละเอียด", so family members (and the
+    presentation audience) can see how the result was reached.
+    """
     category = ScamCategory(record["category"])
     entities = record["entities"]
-    detail = f" (แอบอ้าง{record['impersonated_org']})" if record["impersonated_org"] else ""
-    lines = [
-        f"รายละเอียดรายงาน {record['report_code']}",
-        f"• ประเภท: {category.thai_label}{detail}",
-        f"• ความเสี่ยง: {record['risk']}%",
-    ]
-    optional = (
-        ("ลิงก์ที่พบ", [defang(u) for u in entities.get("urls", [])]),
-        ("เบอร์โทรที่พบ", entities.get("phones", [])),
-        ("เลขบัญชีที่พบ", entities.get("accounts", [])),
+
+    lines = [f"รายละเอียดรายงาน {record['report_code']}", "",
+             "1️⃣ จำแนกข้อความ (Text Classification)",
+             f"• ประเภท: {category.thai_label} ({category.value})",
+             f"• ความเสี่ยง: {record['risk']}%"]
+    if record["impersonated_org"]:
+        lines.append(f"• แอบอ้างเป็น: {record['impersonated_org']}")
+
+    lines += ["", "2️⃣ สกัดข้อมูลสำคัญ (Named Entity Recognition)"]
+    found = (
+        ("ลิงก์", [defang(u) for u in entities.get("urls", [])]),
+        ("เบอร์โทร", entities.get("phones", [])),
+        ("เลขบัญชี", entities.get("accounts", [])),
         ("จำนวนเงิน", entities.get("amounts", [])),
-        ("จุดน่าสงสัย", record["red_flags"]),
+        ("หน่วยงานที่อ้างถึง", entities.get("organizations", [])),
     )
-    lines += [f"• {label}: {', '.join(values)}" for label, values in optional if values]
+    entity_lines = [f"• {label}: {', '.join(values)}" for label, values in found if values]
+    lines += entity_lines or ["• ไม่พบลิงก์ เบอร์โทร หรือเลขบัญชี"]
+
+    lines += ["", "3️⃣ สรุปเหตุผล (Text Summarization)"]
     if record["summary"]:
-        lines.append(f"• สรุป: {record['summary']}")
-    lines.append(f"• คำแนะนำ: {advice_for(category)}")
+        lines.append(f"• {record['summary']}")
+    if record["red_flags"]:
+        lines.append(f"• จุดน่าสงสัย: {', '.join(record['red_flags'])}")
+
+    lines += ["", f"💡 คำแนะนำ: {advice_for(category)}"]
     return "\n".join(lines)
 
 

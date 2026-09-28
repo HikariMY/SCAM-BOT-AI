@@ -46,6 +46,7 @@ CMD_IMAGE = "ส่งรูปให้ตรวจ"
 CMD_HELP = "วิธีใช้"
 CMD_HOTLINE = "สายด่วน 1441"
 CMD_STATS = "สถิติกลโกง"
+CMD_PRIVACY = "ความเป็นส่วนตัว"
 
 Reply = str | FlexReply
 
@@ -111,6 +112,7 @@ class LineBot:
             CMD_IMAGE: formatter.ASK_FOR_IMAGE_TEXT,
             CMD_HELP: formatter.HELP_TEXT,
             CMD_HOTLINE: formatter.HOTLINE_TEXT,
+            CMD_PRIVACY: formatter.PRIVACY_TEXT,
         }
         if command in fixed:
             return [fixed[command]]

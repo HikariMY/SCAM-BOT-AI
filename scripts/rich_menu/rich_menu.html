@@ -1,39 +1,139 @@
 <!doctype html>
-<!-- Source for rich_menu.png (2500x1686). Render at 1250x843 with device scale 2 and screenshot. -->
+<!--
+  Source for both rich menu images (2500x1686 each).
+  Render at 1250x843 with device scale 2, then screenshot:
+    rich_menu.html#check -> rich_menu_check.png  (big buttons, default)
+    rich_menu.html#home  -> rich_menu_home.png   (home: dashboard, help, privacy)
+  Layout must match the tap areas in scripts/setup_rich_menu.py:
+  tab bar = top 125px (250 real), content = remaining 718px (1436 real).
+-->
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
-    html, body { margin: 0; width: 1250px; height: 843px; overflow: hidden; background: #fff; }
-    body {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 6px;
-      font-family: "Sarabun", sans-serif;
+    html, body { margin: 0; width: 1250px; height: 843px; overflow: hidden; }
+    body { font-family: "Sarabun", sans-serif; background: #EEF2FB; display: flex; flex-direction: column; }
+
+    /* Tab bar shared by both menus */
+    .tabs { height: 125px; display: flex; flex: none; background: #0F1E4D; }
+    .tab {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 14px;
+      font-size: 46px; font-weight: 800; color: #AFC0F5;
     }
-    .tile {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      text-align: center;
+    .tab.active { background: #FFFFFF; color: #1E3A8A; border-top: 10px solid #2F5BFF; }
+    .content { flex: 1; display: none; }
+    body.check .content.check, body.home .content.home { display: grid; }
+
+    /* Menu 1: big colored buttons (original) */
+    .content.check { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; background: #fff; }
+    .tile { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+    .tile .icon { font-size: 104px; line-height: 1; }
+    .tile .title { font-size: 72px; font-weight: 800; line-height: 1.3; margin-top: 22px; }
+    .tile .sub { font-size: 36px; font-weight: 700; opacity: .92; }
+    .image { background: #1E3A8A; } .text { background: #2F5BFF; }
+    .call { background: #C62828; } .help { background: #2E7D32; }
+
+    /* Menu 2: home */
+    .content.home { grid-template-rows: 410px 1fr; padding: 0 14px 14px; gap: 14px; }
+    .hero {
+      margin-top: 14px; border-radius: 34px; position: relative; overflow: hidden;
+      background: linear-gradient(120deg, #FFFFFF 45%, #E3EAFF);
+      display: flex; align-items: center; padding: 0 56px;
     }
-    .icon { font-size: 150px; line-height: 1; }
-    .title { font-size: 84px; font-weight: 800; line-height: 1.25; margin-top: 12px; }
-    .sub { font-size: 40px; font-weight: 700; opacity: .92; }
-    .image { background: #1E3A8A; }
-    .text { background: #2F5BFF; }
-    .call { background: #C62828; }
-    .help { background: #2E7D32; }
+    .brand { display: flex; align-items: center; gap: 14px; font-size: 30px; font-weight: 800;
+             letter-spacing: 6px; color: #0F1E4D; }
+    .brand .badge { width: 44px; height: 44px; border-radius: 12px; background: #2446C8;
+                    display: flex; align-items: center; justify-content: center; }
+    .hero h1 { margin: 22px 0 26px; font-size: 84px; line-height: 1.12; font-weight: 800; color: #0F1E4D; }
+    .hero h1 span { color: #2446C8; }
+    .cta { display: inline-flex; align-items: center; gap: 16px; background: #2446C8; color: #fff;
+           font-size: 42px; font-weight: 800; padding: 16px 44px; border-radius: 999px; }
+    .art { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .card { background: #fff; border-radius: 30px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 18px; }
+    .card .circle { width: 128px; height: 128px; border-radius: 50%; background: #E8EEFF;
+                    display: flex; align-items: center; justify-content: center; }
+    .card .label { font-size: 52px; font-weight: 800; color: #0F1E4D; }
   </style>
 </head>
 <body>
-  <div class="tile image"><div class="icon">📷</div><div class="title">ส่งรูปให้ตรวจ</div><div class="sub">แคปหน้าจอแล้วส่งมา</div></div>
-  <div class="tile text"><div class="icon">✍️</div><div class="title">ตรวจข้อความ</div><div class="sub">คัดลอกข้อความมาวาง</div></div>
-  <div class="tile call"><div class="icon">📞</div><div class="title">โทร 1441</div><div class="sub">ปรึกษาฟรี 24 ชม.</div></div>
-  <div class="tile help"><div class="icon">❓</div><div class="title">วิธีใช้</div><div class="sub">ดูวิธีใช้ง่ายๆ</div></div>
+  <div class="tabs">
+    <div class="tab" data-tab="check">🔍 ตรวจข้อความ</div>
+    <div class="tab" data-tab="home">🏠 เมนูหลัก</div>
+  </div>
+
+  <div class="content check">
+    <div class="tile image"><div class="icon">📷</div><div class="title">ส่งรูปให้ตรวจ</div><div class="sub">แคปหน้าจอแล้วส่งมา</div></div>
+    <div class="tile text"><div class="icon">✍️</div><div class="title">ตรวจข้อความ</div><div class="sub">คัดลอกข้อความมาวาง</div></div>
+    <div class="tile call"><div class="icon">📞</div><div class="title">โทร 1441</div><div class="sub">ปรึกษาฟรี 24 ชม.</div></div>
+    <div class="tile help"><div class="icon">❓</div><div class="title">วิธีใช้</div><div class="sub">ดูวิธีใช้ง่ายๆ</div></div>
+  </div>
+
+  <div class="content home">
+    <div class="hero">
+      <div>
+        <div class="brand">
+          <div class="badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round">
+              <path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5z"/><path d="m8.5 12 2.5 2.5 4.5-5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          SCAM ALERT BOT
+        </div>
+        <h1>ตรวจสอบข้อความ<br><span>ที่น่าสงสัย</span></h1>
+        <div class="cta">เริ่มตรวจสอบ <span>→</span></div>
+      </div>
+      <svg class="art" width="380" height="330" viewBox="0 0 380 330">
+        <circle cx="190" cy="165" r="160" fill="none" stroke="#C9D5FA" stroke-width="3"/>
+        <circle cx="190" cy="165" r="120" fill="none" stroke="#DCE4FC" stroke-width="3"/>
+        <rect x="70" y="45" width="220" height="170" rx="22" fill="#fff" stroke="#DCE4FC" stroke-width="3"/>
+        <circle cx="105" cy="82" r="13" fill="#DCE4FC"/>
+        <rect x="128" y="74" width="120" height="14" rx="7" fill="#C9D5FA"/>
+        <rect x="95" y="115" width="170" height="12" rx="6" fill="#E3E8F5"/>
+        <rect x="95" y="140" width="130" height="12" rx="6" fill="#E3E8F5"/>
+        <line x1="40" y1="175" x2="320" y2="175" stroke="#2446C8" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="40" cy="175" r="8" fill="#2446C8"/><circle cx="320" cy="175" r="8" fill="#2446C8"/>
+        <rect x="45" y="200" width="52" height="46" rx="12" fill="#fff" stroke="#DCE4FC" stroke-width="3"/>
+        <path d="M58 215h26M58 227h18" stroke="#2446C8" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="290" cy="235" r="72" fill="#fff"/>
+        <path d="M290 185 250 200v30c0 25 17 45 40 53 23-8 40-28 40-53v-30z" fill="#2446C8"/>
+        <path d="m270 234 14 14 28-30" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="circle">
+          <svg width="66" height="66" viewBox="0 0 24 24" fill="none" stroke="#2446C8" stroke-width="2" stroke-linecap="round">
+            <path d="M3 21h18M6 17v-5M10 17V8M14 17v-6M18 17V5"/><path d="m5 9 4-4 4 3 6-5"/>
+          </svg>
+        </div>
+        <div class="label">Dashboard</div>
+      </div>
+      <div class="card">
+        <div class="circle">
+          <svg width="66" height="66" viewBox="0 0 24 24" fill="none" stroke="#2446C8" stroke-width="2" stroke-linejoin="round">
+            <path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2zM22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/>
+          </svg>
+        </div>
+        <div class="label">วิธีใช้งาน</div>
+      </div>
+      <div class="card">
+        <div class="circle">
+          <svg width="66" height="66" viewBox="0 0 24 24" fill="none" stroke="#2446C8" stroke-width="2" stroke-linecap="round">
+            <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.5"/><path d="M12 16.5V18"/>
+          </svg>
+        </div>
+        <div class="label">ความเป็นส่วนตัว</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const menu = location.hash === "#home" ? "home" : "check";
+    document.body.className = menu;
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === menu));
+  </script>
 </body>
 </html>

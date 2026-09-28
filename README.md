@@ -93,7 +93,8 @@ copy .env.example .env
    ไปใส่ใน Render → Environment แล้วกด Save (Render จะ deploy ใหม่เอง)
 3. ที่ Messaging API → **Webhook URL** ใส่ `https://<ลิงก์ของคุณ>/callback` กด Verify แล้วเปิด **Use webhook**
 4. ใน LINE Official Account Manager ปิด **Auto-reply messages** และ **Greeting messages** (บอทส่งคำทักทายเอง)
-5. ติดตั้งเมนูปุ่มใหญ่ (Rich Menu) รันจากเครื่องตัวเองครั้งเดียว โดยใส่ token ใน `.env` ก่อน:
+5. ติดตั้งเมนู (Rich Menu) รันจากเครื่องตัวเองครั้งเดียว โดยใส่ `LINE_CHANNEL_ACCESS_TOKEN`
+   และ `PUBLIC_BASE_URL` (ลิงก์ Render ใช้กับปุ่ม Dashboard) ใน `.env` ก่อน:
    ```powershell
    .\.venv\Scripts\python.exe -m scripts.setup_rich_menu
    ```
@@ -103,12 +104,17 @@ copy .env.example .env
 
 ### สิ่งที่ผู้ใช้เห็นใน LINE
 
-- **เมนูปุ่มใหญ่ใต้แชท**: 📷 ส่งรูปให้ตรวจ · ✍️ ตรวจข้อความ · 📞 โทร 1441 · ❓ วิธีใช้
+- **เมนูใต้แชท 2 แท็บ** สลับได้ด้วยแถบด้านบน
+  - 🔍 **ตรวจข้อความ** (เมนูเริ่มต้น): 📷 ส่งรูปให้ตรวจ · ✍️ ตรวจข้อความ · 📞 โทร 1441 · ❓ วิธีใช้
+  - 🏠 **เมนูหลัก**: เริ่มตรวจสอบ · Dashboard (เปิดหน้าสถิติ) · วิธีใช้งาน · ความเป็นส่วนตัว
 - **ส่งรูปแคปหน้าจอ SMS ได้** ไม่ต้องคัดลอกข้อความเป็น
 - ระหว่างตรวจจะเห็นจุด "..." ว่าบอทกำลังทำงาน
-- **ผลเป็นการ์ดสี** ตัวใหญ่ มีปุ่ม "📞 โทร 1441 ปรึกษาฟรี" และ "ดูรายละเอียด" สำหรับลูกหลาน
+- **ผลเป็นการ์ดสี** ตัวใหญ่ มีปุ่ม "📞 โทร 1441 ปรึกษาฟรี" และ "ดูรายละเอียด" ที่แสดงผลแยกตามขั้นตอน NLP
+  (Text Classification → Named Entity Recognition → Text Summarization)
 
-รูปเมนูสร้างจาก `scripts/rich_menu/rich_menu.html` (แคปที่ 1250x843 ความละเอียด 2x ได้ `rich_menu.png` ขนาด 2500x1686)
+รูปเมนูทั้งสองสร้างจาก `scripts/rich_menu/rich_menu.html` เปิดด้วย `#check` หรือ `#home`
+แล้วแคปที่ 1250x843 ความละเอียด 2x ได้ `rich_menu_check.png` และ `rich_menu_home.png` ขนาด 2500x1686
+ตำแหน่งปุ่มใน `scripts/setup_rich_menu.py` ต้องตรงกับ layout ใน HTML
 
 ## API
 

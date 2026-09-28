@@ -91,9 +91,21 @@ def test_format_details_from_stored_record():
     text = formatter.format_details(record)
 
     assert "รายละเอียดรายงาน SA-2026-0001" in text
-    assert "ลิงก์ปลอม (แอบอ้างขนส่ง)" in text
+    assert "Text Classification" in text and "Named Entity Recognition" in text
+    assert "Text Summarization" in text
+    assert "ประเภท: ลิงก์ปลอม (PHISHING)" in text
+    assert "แอบอ้างเป็น: ขนส่ง" in text
     assert "parcel-th-update[.]cc" in text
     assert "เบอร์โทร" not in text
+
+
+def test_format_details_without_entities_says_none_found():
+    record = {
+        "report_code": "SA-2026-0002", "category": "SAFE", "risk": 5,
+        "impersonated_org": None, "summary": "", "red_flags": [], "entities": {},
+    }
+
+    assert "ไม่พบลิงก์ เบอร์โทร หรือเลขบัญชี" in formatter.format_details(record)
 
 
 def test_format_stats_lists_top_items():
